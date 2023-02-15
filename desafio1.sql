@@ -2,55 +2,57 @@ DROP DATABASE IF EXISTS SpotifyClone;
 
   CREATE DATABASE IF NOT EXISTS SpotifyClone;
 
-  CREATE TABLE SpotifyClone.albuns(
-      album_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-      title VARCHAR(250) NOT NULL,
-      release_year YEAR NOT NULL,
-      artist_id INT NOT NULL,
-        FOREIGN KEY (artist_id) REFERENCES artists (artist_id)
-  ) engine = InnoDB;
-
-  CREATE TABLE SpotifyClone.artists(
-      artist_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-      artist VARCHAR(250) NOT NULL,
-  ) engine = InnoDB;
-
-  CREATE TABLE SpotifyClone.songs(
-      song_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-      song VARCHAR(250) NOT NULL,
-      duratin_seconds INT NOT NULL,
-      album_id INT NOT NULL,
-        FOREIGN KEY (album_id) REFERENCES albuns (album_id)
-  ) engine = InnoDB;
-
-  CREATE TABLE SpotifyClone.reproductions(
-      user_id INT NOT NULL,
-      song_id INT NOT NULL,
-      reproduction_date DATETIME NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users (user_id)      
-        FOREIGN KEY (song_id) REFERENCES songs (song_id)
-  ) engine = InnoDB;
-
-  CREATE TABLE SpotifyClone.following(
-      user_id INT NOT NULL,
-      artist_id INT NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users (user_id)      
-        FOREIGN KEY (artist_id) REFERENCES artists (artist_id)
-  ) engine = InnoDB;
-
-  CREATE TABLE SpotifyClone.users(
-      user_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-      user VARCHAR(250) NOT NULL,
-      age INT NOT NULL,
-      plan_id INT NOT NULL,
-      sign_date DATE NOT NULL,
-        FOREIGN KEY (plan_id) REFERENCES plans (plan_id)
-  ) engine = InnoDB;
-
   CREATE TABLE SpotifyClone.plans(
       plan_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
       plan VARCHAR(50) NOT NULL,
       plan_value decimal(5,2) NOT NULL,
+  ) engine = InnoDB;
+
+  CREATE TABLE SpotifyClone.artists(
+    artist_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    artist VARCHAR(250) NOT NULL,
+  ) engine = InnoDB;
+
+  CREATE TABLE SpotifyClone.users(
+    user_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user VARCHAR(250) NOT NULL,
+    age INT NOT NULL,
+    plan_id INT NOT NULL,
+    sign_date DATE NOT NULL,
+      FOREIGN KEY (plan_id) REFERENCES plans (plan_id),
+  ) engine = InnoDB;
+
+  CREATE TABLE SpotifyClone.albuns(
+    album_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(250) NOT NULL,
+    release_year YEAR NOT NULL,
+    artist_id INT NOT NULL,
+      FOREIGN KEY (artist_id) REFERENCES artists (artist_id),
+  ) engine = InnoDB;
+
+  CREATE TABLE SpotifyClone.songs(
+    song_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    song VARCHAR(250) NOT NULL,
+    duratin_seconds INT NOT NULL,
+    album_id INT NOT NULL,
+      FOREIGN KEY (album_id) REFERENCES albuns (album_id),
+  ) engine = InnoDB;
+
+  CREATE TABLE SpotifyClone.reproductions(
+    user_id INT NOT NULL,
+    song_id INT NOT NULL,
+    reproduction_date DATETIME NOT NULL,
+    CONSTRAINT PRIMARY KEY (user_id, song_id),
+      FOREIGN KEY (user_id) REFERENCES users (user_id),    
+      FOREIGN KEY (song_id) REFERENCES songs (song_id),
+  ) engine = InnoDB;
+
+  CREATE TABLE SpotifyClone.following(
+    user_id INT NOT NULL,
+    artist_id INT NOT NULL,
+    CONSTRAINT PRIMARY KEY (user_id, artist_id),
+      FOREIGN KEY (user_id) REFERENCES users (user_id),      
+      FOREIGN KEY (artist_id) REFERENCES artists (artist_id),
   ) engine = InnoDB;
 
   INSERT INTO SpotifyClone.plans (plan, plan_value)
@@ -59,6 +61,15 @@ DROP DATABASE IF EXISTS SpotifyClone;
     ('student', 5.99),
     ('personal', 6.99),
     ('family', 7.99);
+
+  INSERT INTO SpotifyClone.artists (artist)
+  VALUES
+    ('Beyoncé'),
+    ('Queen'),
+    ('Elis Regina'),
+    ('Baco Exu do Blues'),
+    ('Blind Guardian'),
+    ('Nina Simone');
 
   INSERT INTO SpotifyClone.users (user, age, plan_id, sign_date)
   VALUES
@@ -73,22 +84,30 @@ DROP DATABASE IF EXISTS SpotifyClone;
     ('Judith Butler', 45, 3,	'2020-05-13'),
     ('Jorge Amado', 58,	3,	'2017-02-17');
 
- INSERT INTO SpotifyClone.following (user_id, artist_id)
+INSERT INTO SpotifyClone.albuns (album, artist_id, release_year)
   VALUES
-    (1, 1),
-    (1, 2),
-    (1, 3),
-    (2, 1),
-    (2, 3),
-    (3, 2),    
-    (4, 4),
-    (5, 5),
-    (5, 6),
-    (6, 6),
-    (6, 1),
-    (7, 6),
-    (9, 3),
-    (10, 2);
+    ('Renaissance',	1,	2022),
+    ('Jazz', 2,	1978),
+    ('Hot Space',	2,	1982),
+    ('Falso Brilhante',	3,	1998),
+    ('Vento de Maio',	3,	2001),
+    ('QVVJFA?',	4,	2003),    
+    ('Somewhere Far Beyond', 5,	2007),
+    ('I Put A Spell On You', 6,	2012);
+
+
+INSERT INTO SpotifyClone.songs (song, duration_seconds, album_id)
+  VALUES
+    ('BREAK MY SOUL',	279,	1),
+    ('VIRGO’S GROOVE',	369,	1),
+    ('ALIEN SUPERSTAR',	116,	1),
+    ('Don’t Stop Me Now',	203,	2),
+    ('Under Pressure',	152,	3),
+    ('Como Nossos Pais',	105,	4),    
+    ('O Medo de Amar é o Medo de Ser Livre',	207,	5),
+    ('Samba em Paris',	267,	6),
+    ('The Bard’s Song',	244,	7),
+    ('Feeling Good',	100,	8);
 
 INSERT INTO SpotifyClone.reproductions (user_id, song_id, reproduction_date)
   VALUES
@@ -109,35 +128,19 @@ INSERT INTO SpotifyClone.reproductions (user_id, song_id, reproduction_date)
     (9,	9, '2022-02-24 21:14:22'),
     (10, 3,	'2015-12-13 08:30:22');
 
-INSERT INTO SpotifyClone.songs (song, duration_seconds, album_id)
+ INSERT INTO SpotifyClone.following (user_id, artist_id)
   VALUES
-    ('BREAK MY SOUL',	279,	1),
-    ('VIRGO’S GROOVE',	369,	1),
-    ('ALIEN SUPERSTAR',	116,	1),
-    ('Don’t Stop Me Now',	203,	2),
-    ('Under Pressure',	152,	3),
-    ('Como Nossos Pais',	105,	4),    
-    ('O Medo de Amar é o Medo de Ser Livre',	207,	5),
-    ('Samba em Paris',	267,	6),
-    ('The Bard’s Song',	244,	7),
-    ('Feeling Good',	100,	8);
-
-INSERT INTO SpotifyClone.artists (artist)
-  VALUES
-    ('Beyoncé'),
-    ('Queen'),
-    ('Elis Regina'),
-    ('Baco Exu do Blues'),
-    ('Blind Guardian'),
-    ('Nina Simone');
-
-INSERT INTO SpotifyClone.albuns (album, artist_id, release_year)
-  VALUES
-    ('Renaissance',	1,	2022),
-    ('Jazz', 2,	1978),
-    ('Hot Space',	2,	1982),
-    ('Falso Brilhante',	3,	1998),
-    ('Vento de Maio',	3,	2001),
-    ('QVVJFA?',	4,	2003),    
-    ('Somewhere Far Beyond', 5,	2007),
-    ('I Put A Spell On You', 6,	2012);
+    (1, 1),
+    (1, 2),
+    (1, 3),
+    (2, 1),
+    (2, 3),
+    (3, 2),    
+    (4, 4),
+    (5, 5),
+    (5, 6),
+    (6, 6),
+    (6, 1),
+    (7, 6),
+    (9, 3),
+    (10, 2);
