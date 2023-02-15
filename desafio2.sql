@@ -8,9 +8,9 @@
 -- e deverá ter o alias "albuns".
 
 SELECT
-    COUNT(songs.song) AS "cancoes",
-    COUNT(artists.artist) AS "artistas",
-    COUNT(albuns.album) AS "albuns"
+    COUNT(DISTINCT songs.song) AS "cancoes",
+    COUNT(DISTINCT artists.artist) AS "artistas",
+    COUNT(DISTINCT albuns.album) AS "albuns"
 FROM SpotifyClone.songs
 	INNER JOIN SpotifyClone.artists
 	INNER JOIN SpotifyClone.albuns;
